@@ -52,12 +52,12 @@ class Planet:
         """
         
         
-        theta: np.array([]) = np.linspace(0, 2*np.pi, 1000)
+        theta = np.linspace(0, 2*np.pi, 1000)
         
         # 2D Orbits
-        r: np.array([]) = self.a * (1 - self.ecc**2) / (1 - self.ecc * np.cos(theta))
-        x: np.array([]) = r * np.cos(theta)
-        y: np.array([]) = r * np.sin(theta)
+        r = self.a * (1 - self.ecc**2) / (1 - self.ecc * np.cos(theta))
+        x = r * np.cos(theta)
+        y = r * np.sin(theta)
         
         
         if compute_3D:
@@ -65,9 +65,9 @@ class Planet:
             beta: float = self.beta*np.pi/180
             
             # 3D orbits
-            xx: np.array([]) = x * np.cos(beta)
-            yy: np.array([]) = y
-            zz: np.array([]) = x * np.sin(beta)
+            xx = x * np.cos(beta)
+            yy = y
+            zz = x * np.sin(beta)
             
             return {"name": self.name,
                     "x": xx,
@@ -99,18 +99,18 @@ class Planet:
         
         # Planets
         planet_theta: float = (2*np.pi*t)/self.P
-        r: np.array([]) = self.a * (1 - self.ecc**2) / (1 - self.ecc * np.cos(planet_theta))
-        x: np.array([]) = r * np.cos(planet_theta)
-        y : np.array([]) = r * np.sin(planet_theta)
+        r = self.a * (1 - self.ecc**2) / (1 - self.ecc * np.cos(planet_theta))
+        x = r * np.cos(planet_theta)
+        y = r * np.sin(planet_theta)
         
         if compute_3D:
             # Beta to radians
             beta: float = self.beta*np.pi/180
             
             # 3D orbits
-            xx: np.array([]) = x * np.cos(beta)
-            yy: np.array([]) = y
-            zz: np.array([]) = x * np.sin(beta)
+            xx = x * np.cos(beta)
+            yy = y
+            zz = x * np.sin(beta)
             
             return {"name": self.name,
                     "x": xx,

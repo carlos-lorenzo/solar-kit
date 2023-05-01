@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict
+import os
 
 import matplotlib.pyplot as plt
 
 from solar_system import Solar_System
-from utils import load_system
+
 
 @dataclass
 class Viewer:
@@ -106,7 +107,7 @@ class Viewer:
         else:
             self.ax.scatter(0, 0, s=100, label="Sun", c="y")
             
-    def show_orbits(self) -> None:
+    def show_orbits(self, save_figure: bool) -> None:
         """
         Show the orbits of the selected planets
         """
@@ -123,12 +124,19 @@ class Viewer:
             
         plt.legend()
         plt.grid()
+        
+        if save_figure:
+            if not os.path.exists("/figures"):
+                os.mkdir("figures")
+            plt.savefig(f"figures/{self.system.system_name}'s orbit")
+        
         plt.show()
             
     def animate_orbits(self) -> None:
         """
         Animate the orbits of the selected planets
         """
+        
         while self.t < self.tmax:
             self.plot_sun()
             
@@ -140,7 +148,7 @@ class Viewer:
                 self.plot_planet(planet_data=planet_planet_data)
 
             self.t += self.dt
-        
+            
             plt.title("Planet orbits")
             self.ax.set_xlabel('x (AU)')
             self.ax.set_ylabel('y (AU)')
@@ -150,5 +158,8 @@ class Viewer:
             
             plt.legend()
             plt.grid()
+            
             plt.pause(1/self.target_fps)
             plt.cla()
+            
+       

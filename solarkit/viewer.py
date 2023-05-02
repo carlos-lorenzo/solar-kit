@@ -1,10 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict
-import os
+
 
 import matplotlib.pyplot as plt
 
+
+import utils
+
 from solar_system import Solar_System
+from planet import Planet
 
 
 @dataclass
@@ -16,7 +20,7 @@ class Viewer:
         system (Solar_System): A Solar_System object\n
         planets_to_use (List[str]): Select speficif planets (leave blank for all)\n
         compute_3D (bool): Show in 3D\n
-        target_fps (int): Animation's fps, might be lower if system not powerful enough\n
+        target_fps (int): Animation's fps\n
     """
     system: Solar_System
     planets_to_use: List[str] = field(default_factory=list)
@@ -24,6 +28,8 @@ class Viewer:
     target_fps: Optional[int] = field(default=30)
     
     orbit_data: Dict[str, Dict[str, List[float]]] = field(init=False, default_factory=dict)
+    chosen_planets: List[Planet] = field(init=False, default=list)
+    
     
     fig: plt.figure = field(init=False)
     ax: plt.Axes = field(init=False)
@@ -33,17 +39,21 @@ class Viewer:
     t: float = field(init=False, default=0)
     
     
-    
-    
     def __post_init__(self):
         
         if not self.planets_to_use:
             self.planets_to_use = list(self.system.planets.keys())
+            
         
         self.system.planets = dict(sorted(self.system.planets.items(), key=lambda planet: planet[1].P))
-        self.orbit_data = [planet.compute_orbit(compute_3D=self.compute_3D) for planet in list(map(self.system.planets.get, self.planets_to_use))]
+        
+        self.chosen_planets = list(map(self.system.planets.get, self.planets_to_use))
+        
+        self.orbit_data = [planet.compute_orbit(compute_3D=self.compute_3D) for planet in self.chosen_planets]
 
-        self.tmax = 4 * list(map(self.system.planets.get, self.planets_to_use))[-1].P
+        
+        
+        self.tmax = 4 * self.chosen_planets[-1].P
         self.dt = self.tmax/2500
         
         if self.compute_3D:
@@ -63,8 +73,7 @@ class Viewer:
     def __str__(self) -> str:
         return f"Planets: {self.system.__str__()}\n3D: {self.compute_3D}\nAnimation FPS: {self.target_fps}"
         
-        
-        
+           
     def plot_orbit(self, orbit_data: Dict[str, List[float]]) -> None:
         """
         Plots the orbit of a planet
@@ -78,19 +87,19 @@ class Viewer:
                     
         """
         
-        if "z" in orbit_data:
-            # Draw 3D
-            self.ax.plot(orbit_data["x"], orbit_data["y"], orbit_data["z"], label=f"{orbit_data['name']}'s orbit")
+        if "z" in orbit_data.keys(): # if self.compute_3D
+            
+            self.ax.plot(orbit_data["x"], orbit_data["y"], orbit_data["z"], label=f"{orbit_data['name']}'s orbit", c=orbit_data["c"])
         else:
-            # Draw 2D
-            self.ax.plot(orbit_data["x"], orbit_data["y"], label=f"{orbit_data['name']}'s orbit")
+            self.ax.plot(orbit_data["x"], orbit_data["y"], label=f"{orbit_data['name']}'s orbit", c=orbit_data["c"])
             
     def plot_planet(self, planet_data: Dict[str, float]) -> None:
         """
-        Plots a planet on self.ax               
+        Plots a planet on self.ax   
+                    
         """
-        if "z" in planet_data.keys():
-            # Draw 3D
+        if "z" in planet_data.keys(): # if self.compute_3D
+            
             self.ax.scatter(planet_data["x"], planet_data["y"], planet_data["z"], label=planet_data["name"], s=25)
         else:
             # Draw 2D
@@ -106,10 +115,13 @@ class Viewer:
             
         else:
             self.ax.scatter(0, 0, s=100, label="Sun", c="y")
-            
-    def show_orbits(self, save_figure: bool) -> None:
+      
+    def show_orbits(self, save_figure: bool = False) -> None:
         """
         Show the orbits of the selected planets
+        
+        Args:
+            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
         """
         self.plot_sun()
         
@@ -125,10 +137,8 @@ class Viewer:
         plt.legend()
         plt.grid()
         
-        if save_figure:
-            if not os.path.exists("/figures"):
-                os.mkdir("figures")
-            plt.savefig(f"figures/{self.system.system_name}'s orbit")
+        if save_figure: 
+            utils.save_figure(name=f"{self.system.system_name}'s orbit")
         
         plt.show()
             
@@ -143,7 +153,7 @@ class Viewer:
             for planet_orbit_data in self.orbit_data:
                 self.plot_orbit(orbit_data=planet_orbit_data)    
 
-            planet_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in list(map(self.system.planets.get, self.planets_to_use))]
+            planet_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in self.chosen_planets]
             for planet_planet_data in planet_data:
                 self.plot_planet(planet_data=planet_planet_data)
 
@@ -161,5 +171,80 @@ class Viewer:
             
             plt.pause(1/self.target_fps)
             plt.cla()
+    
+    def spinograph(self, save_figure: bool = False) -> None:
+        """
+        Draw a spinograph with the chosen planets        
+
+        Args:
+            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
             
+        """
+        
+        self.tmax *= 10
+        self.dt = self.tmax / 1234
+        
+        
+        while self.t < self.tmax:
+            planet_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in self.chosen_planets]
+            
+            x = [data["x"] for data in planet_data]
+            y = [data["y"] for data in planet_data]
+            
+            if self.compute_3D:
+                z = [data["z"] for data in planet_data]
+                self.ax.plot(x, y, z, c="k")
+            else:
+                self.ax.plot(x, y, c="k")
+            
+            self.t += self.dt
+        
+        for planet_orbit_data in self.orbit_data:
+            self.plot_orbit(orbit_data=planet_orbit_data)
+        
+        
+        if save_figure:
+            utils.save_figure(name=f"{self.system.system_name}'s spinograph")
+            
+        plt.show()
+        
+    def animate_spinograph(self, save_figure: bool = False) -> None:
+        """
+        Animate the drawing of a spinograph with the chosen planets        
+
+        Args:
+            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
+            
+        """
+        
+        
+        self.tmax *= 10
+        self.dt = self.tmax / 1234
+        
+        
+        while self.t < self.tmax:
+            planet_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in self.chosen_planets]
+            
+            x = [data["x"] for data in planet_data]
+            y = [data["y"] for data in planet_data]
+            
+            if self.compute_3D:
+                z = [data["z"] for data in planet_data]
+                self.ax.plot(x, y, z, c="k")
+            else:
+                self.ax.plot(x, y, c="k")
+            
+            self.t += self.dt
+        
+            for planet_orbit_data in self.orbit_data:
+                self.plot_orbit(orbit_data=planet_orbit_data)
+        
+
+            plt.pause(1/self.target_fps)
+            
+        if save_figure:
+            utils.save_figure(name=f"{self.system.system_name}'s spinograph")
+            
+        
+        
        

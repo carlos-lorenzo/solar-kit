@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List
 
 
@@ -20,6 +20,7 @@ class Planet:
         R (float): Radius (Earth radii)\n
         trot (float): Rotational period (days)\n
         P (float): Orbital period (years)\n
+        color (str): The colour it will have when viewing
     """
     
     name: str
@@ -30,6 +31,7 @@ class Planet:
     R: float
     trot: float
     P: float
+    colour: str = field(default="k")    
     
     def __str__(self) -> str:
         return self.name
@@ -44,6 +46,7 @@ class Planet:
 
         Returns:
             Dict: {name: planet name, 
+                    c: colour,
                     x: list of points on x-axis., 
                     y: list of points on y-axis,
                     z: list of point on z-axis}
@@ -70,12 +73,14 @@ class Planet:
             zz = x * np.sin(beta)
             
             return {"name": self.name,
+                    "c": self.colour,
                     "x": xx,
                     "y": yy,
                     "z": zz} 
         
         else:
             return {"name": self.name,
+                    "c": self.colour,
                     "x": x,
                     "y": y}
             
@@ -89,8 +94,9 @@ class Planet:
             t (float): The time to simulate\n
 
         Returns:
-            Dict: {name: planet name, 
-                    x: list of points on x-axis., 
+            Dict: {name: planet name,
+                    c: colour,
+                    x: list of points on x-axis, 
                     y: list of points on y-axis,
                     z: list of point on z-axis}
                     
@@ -113,12 +119,14 @@ class Planet:
             zz = x * np.sin(beta)
             
             return {"name": self.name,
+                    "c": self.colour,
                     "x": xx,
                     "y": yy,
                     "z": zz}
             
         else:
             return {"name": self.name,
+                    "c": self.colour,
                     "x": x,
                     "y": y}
             

@@ -1,4 +1,8 @@
+import pickle
+import os
+
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from planet import Planet
 from solar_system import Solar_System
@@ -20,7 +24,8 @@ def create_planet(planet_data: pd.Series(object)) -> Planet:
                                 beta=planet_data["beta"],
                                 R=planet_data["R"],
                                 trot=planet_data["trot"],
-                                P=planet_data["P"])
+                                P=planet_data["P"],
+                                colour=planet_data["colour"],)
     
     return new_planet
 
@@ -44,3 +49,36 @@ def load_system(path: str):
         system.add(create_planet(planet_data=planet_data))
         
     return system
+
+def save_figure(name: str) -> None:
+    if not os.path.exists("figures"):
+        os.mkdir("figures")
+        
+    plt.savefig(f"figures/{name}")
+
+def save_system(model: Solar_System) -> None:
+    """
+    Serialises Solar_System object with pickle
+
+    Args:
+        model (Solar_System): The Solar_System object you want to save
+    """
+    
+    
+    pickle.dump(model, open(f"{model.system_name}", "wb"))
+    
+
+
+ 
+def load_model(model_path: str) -> Solar_System:
+    """
+    Loads a serialised Solar_System from memory
+
+    Args:
+        model_path (str): The path to the model
+
+    Returns:
+        Solar_System: The loaded Solar_System object
+    """
+    
+    return pickle.load(open(model_path, "rb"))

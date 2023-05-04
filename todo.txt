@@ -1,3 +1,2 @@
 - Save animation
-- Default model
-- Spinograph
+- Do not calculate orbit data when initialising

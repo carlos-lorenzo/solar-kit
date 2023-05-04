@@ -79,7 +79,12 @@ class Viewer:
         Plots the orbit of a planet
 
         Args:
-            orbit_data (Dict): Dictionary containing orbit data (planet name, x, y, z)\n
+            orbit_data Dict: {name: planet name, 
+                    c: colour,
+                    x: list of points on x-axis, 
+                    y: list of points on y-axis,
+                    z: list of point on z-axis}\n
+                    
             ax (plt.Axes): Axes to draw the orbit on\n
             
         Returns:
@@ -95,15 +100,22 @@ class Viewer:
             
     def plot_planet(self, planet_data: Dict[str, float]) -> None:
         """
-        Plots a planet on self.ax   
+        Plots a planet on self.ax
+        
+        Args:
+            planet_data Dict: {name: planet name, 
+                    c: colour,
+                    x: list of points on x-axis, 
+                    y: list of points on y-axis,
+                    z: list of point on z-axis}
                     
         """
         if "z" in planet_data.keys(): # if self.compute_3D
             
-            self.ax.scatter(planet_data["x"], planet_data["y"], planet_data["z"], label=planet_data["name"], s=25)
+            self.ax.scatter(planet_data["x"], planet_data["y"], planet_data["z"], label=planet_data["name"], s=25, c=planet_data["c"])
         else:
             # Draw 2D
-            self.ax.scatter(planet_data["x"], planet_data["y"], label=planet_data["name"], s=25)
+            self.ax.scatter(planet_data["x"], planet_data["y"], label=planet_data["name"], s=25, c=planet_data["c"])
              
     def plot_sun(self) -> None:
         """
@@ -197,6 +209,7 @@ class Viewer:
             else:
                 self.ax.plot(x, y, c="k")
             
+            
             self.t += self.dt
         
         for planet_orbit_data in self.orbit_data:
@@ -245,6 +258,31 @@ class Viewer:
         if save_figure:
             utils.save_figure(name=f"{self.system.system_name}'s spinograph")
             
+    def heliocentric_model(self, origin_planet_name: str, save_figure: bool = False) -> None:
         
+        self.tmax *= 10
+        self.dt = self.tmax / 1234
         
+        while self.t < self.tmax:
+            origin_planet_data = self.system.planets[origin_planet_name].compute_position(compute_3D=self.compute_3D, t=self.t)
+            
+            planets_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in self.chosen_planets]
+            
+            relative_planets_data = [self.system.compute_relative_vector(origin_planet_data=origin_planet_data, target_planet_data=target_planet_data) for target_planet_data in planets_data]
+            
+            # Improvement: compute all positions and then plot
+            for planet_data in relative_planets_data:
+                self.plot_planet(planet_data=planet_data)
+                
+            self.t += self.dt
+        
+    
+        #plt.legend()
+        plt.grid()
+        
+        if save_figure: 
+            utils.save_figure(name=f"{origin_planet_name}'s heliocentric model")
+        
+        plt.show()
+                    
        

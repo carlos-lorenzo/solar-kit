@@ -3,6 +3,7 @@ from typing import Optional, List, Dict
 
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 import utils
@@ -69,7 +70,8 @@ class Viewer:
             x_left, x_right = self.ax.get_xlim()
             y_low, y_high = self.ax.get_ylim()
             self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
-    
+            
+        
     def __str__(self) -> str:
         return f"Planets: {self.system.__str__()}\n3D: {self.compute_3D}\nAnimation FPS: {self.target_fps}"
         
@@ -117,16 +119,20 @@ class Viewer:
             # Draw 2D
             self.ax.scatter(planet_data["x"], planet_data["y"], label=planet_data["name"], s=25, c=planet_data["c"])
              
-    def plot_sun(self) -> None:
+    def plot_centre(self, name: str, colour: str) -> None:
         """
-        Draw Sun on axes on self.ax
+        Draw the centre of the model, can be a sun or a planet when using heliocentric model
+
+        Args:
+            name (str): Legend label
+            colour (str): Plot colour
         """
 
         if self.compute_3D:
-            self.ax.scatter(0, 0, 0, s=100, label="Sun", c="y")
+            self.ax.scatter(0, 0, 0, s=100, label=name, c=colour)
             
         else:
-            self.ax.scatter(0, 0, s=100, label="Sun", c="y")
+            self.ax.scatter(0, 0, s=100, label=name, c=colour)
       
     def show_orbits(self, save_figure: bool = False) -> None:
         """
@@ -135,7 +141,7 @@ class Viewer:
         Args:
             save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
         """
-        self.plot_sun()
+        self.plot_centre(name="Sun", colour="y")
         
         for planet_orbit_data in self.orbit_data:
             self.plot_orbit(orbit_data=planet_orbit_data)  
@@ -160,7 +166,7 @@ class Viewer:
         """
         
         while self.t < self.tmax:
-            self.plot_sun()
+            self.plot_centre(name="Sun", colour="y")
             
             for planet_orbit_data in self.orbit_data:
                 self.plot_orbit(orbit_data=planet_orbit_data)    
@@ -216,6 +222,13 @@ class Viewer:
             self.plot_orbit(orbit_data=planet_orbit_data)
         
         
+        plt.title(f"{self.system.system_name}'s spinograph")
+        self.ax.set_xlabel('x (AU)')
+        self.ax.set_ylabel('y (AU)')
+        
+        if self.compute_3D:
+                self.ax.set_zlabel('z (AU)')
+        
         if save_figure:
             utils.save_figure(name=f"{self.system.system_name}'s spinograph")
             
@@ -254,16 +267,33 @@ class Viewer:
         
 
             plt.pause(1/self.target_fps)
-            
+        
+        plt.title(f"{self.system.system_name}'s spinograph")
+        self.ax.set_xlabel('x (AU)')
+        self.ax.set_ylabel('y (AU)')
+        
+        if self.compute_3D:
+            self.ax.set_zlabel('z (AU)')
+        
         if save_figure:
             utils.save_figure(name=f"{self.system.system_name}'s spinograph")
             
     def heliocentric_model(self, origin_planet_name: str, save_figure: bool = False) -> None:
         
-        self.tmax *= 10
-        self.dt = self.tmax / 1234
+        num_points = 1234
         
-        while self.t < self.tmax:
+        self.tmax *= 10
+        self.dt = self.tmax / num_points
+        
+        
+        
+        x = np.zeros((len(self.chosen_planets), num_points))
+        y = np.zeros((len(self.chosen_planets), num_points))
+
+        if self.compute_3D:
+            z = np.zeros((len(self.chosen_planets), num_points))
+        
+        for i in range(num_points):
             origin_planet_data = self.system.planets[origin_planet_name].compute_position(compute_3D=self.compute_3D, t=self.t)
             
             planets_data = [planet.compute_position(compute_3D=self.compute_3D, t=self.t) for planet in self.chosen_planets]
@@ -271,14 +301,39 @@ class Viewer:
             relative_planets_data = [self.system.compute_relative_vector(origin_planet_data=origin_planet_data, target_planet_data=target_planet_data) for target_planet_data in planets_data]
             
             # Improvement: compute all positions and then plot
-            for planet_data in relative_planets_data:
-                self.plot_planet(planet_data=planet_data)
+            for j, planet_data in enumerate(relative_planets_data):
+                x[j][i] = planet_data["x"]
+                y[j][i] = planet_data["y"]
                 
+                if self.compute_3D:
+                    z[j][i] = planet_data["z"]
+                    
             self.t += self.dt
         
-    
-        #plt.legend()
-        plt.grid()
+
+        
+        if self.compute_3D:
+            for planet_x, planet_y, planet_z, planet in zip(x, y, z, self.chosen_planets):
+                self.ax.plot(planet_x, planet_y, planet_z, label=planet.name, c=planet.colour)
+                
+            
+                
+        else:
+            for planet_x, planet_y, planet in zip(x, y, self.chosen_planets):
+                self.ax.plot(planet_x, planet_y, label=planet.name, c=planet.colour)
+            
+
+        self.plot_centre(name=origin_planet_name, colour=origin_planet_data["c"])
+
+        
+        plt.title(f"{origin_planet_name}'s heliocentric model")
+        self.ax.set_xlabel('x (AU)')
+        self.ax.set_ylabel('y (AU)')
+        
+        if self.compute_3D:
+            self.ax.set_zlabel('z (AU)')
+        
+        plt.legend()
         
         if save_figure: 
             utils.save_figure(name=f"{origin_planet_name}'s heliocentric model")

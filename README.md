@@ -13,3 +13,6 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Tool to create, save & load a custom solar system
 * Save the model output to an image
 * Spinogrpah, animated
+
+### How to use
+1. pip install solarkit

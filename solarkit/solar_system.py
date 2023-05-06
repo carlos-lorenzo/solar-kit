@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional
 
 from planet import Planet
 

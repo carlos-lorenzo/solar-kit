@@ -12,4 +12,4 @@ It was built as the first part of a two part subimission for the challenge. My i
 ### Personal aditions
 * Tools to create, save & load a custom solar system
 * Save the model output to an image
-* Spinogrpah, animated
+* Spinograph, animated

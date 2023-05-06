@@ -1,2 +1,0 @@
-- Save animation
-- Do not calculate orbit data when initialising

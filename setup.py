@@ -24,7 +24,7 @@ setup(
     keywords=["solar system", "space", "astrophysics", "bpho"],
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Intended Audience :: BPhO Judges & Enthusiasts",
+        "Intended Audience :: Education",
         "Programming Language :: Python :: 3",
         "Operating System :: Unix",
         "Operating System :: MacOS :: MacOS X",

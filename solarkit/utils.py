@@ -50,11 +50,13 @@ def load_system(path: str):
         
     return system
 
+
 def save_figure(name: str) -> None:
     if not os.path.exists("figures"):
         os.mkdir("figures")
         
     plt.savefig(f"figures/{name}", dpi=250)
+
 
 def save_system(model: Solar_System) -> None:
     """
@@ -68,8 +70,6 @@ def save_system(model: Solar_System) -> None:
     pickle.dump(model, open(f"{model.system_name}", "wb"))
     
 
-
- 
 def load_model(model_path: str) -> Solar_System:
     """
     Loads a serialised Solar_System from memory

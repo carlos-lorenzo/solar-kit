@@ -134,11 +134,12 @@ class Viewer:
         else:
             self.ax.scatter(0, 0, s=100, label=name, c=colour)
       
-    def show_orbits(self, save_figure: bool = False) -> None:
+    def show_orbits(self, show_plot: bool = True, save_figure: bool = False) -> None:
         """
         Show the orbits of the selected planets
         
         Args:
+            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.
             save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
         """
         self.plot_centre(name="Sun", colour="y")
@@ -158,7 +159,8 @@ class Viewer:
         if save_figure: 
             utils.save_figure(name=f"{self.system.system_name}'s orbit")
         
-        plt.show()
+        if show_plot:
+            plt.show()
             
     def animate_orbits(self) -> None:
         """
@@ -190,11 +192,12 @@ class Viewer:
             plt.pause(1/self.target_fps)
             plt.cla()
     
-    def spinograph(self, save_figure: bool = False) -> None:
+    def spinograph(self, show_plot: bool = True, save_figure: bool = False) -> None:
         """
         Draw a spinograph with the chosen planets        
 
         Args:
+            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.           
             save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
             
         """
@@ -231,14 +234,15 @@ class Viewer:
         
         if save_figure:
             utils.save_figure(name=f"{self.system.system_name}'s spinograph")
-            
-        plt.show()
+        
+        if show_plot:   
+            plt.show()
         
     def animate_spinograph(self, save_figure: bool = False) -> None:
         """
         Animate the drawing of a spinograph with the chosen planets        
 
-        Args:
+        Args:  
             save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
             
         """
@@ -265,7 +269,7 @@ class Viewer:
             for planet_orbit_data in self.orbit_data:
                 self.plot_orbit(orbit_data=planet_orbit_data)
         
-
+            
             plt.pause(1/self.target_fps)
         
         plt.title(f"{self.system.system_name}'s spinograph")
@@ -278,11 +282,19 @@ class Viewer:
         if save_figure:
             utils.save_figure(name=f"{self.system.system_name}'s spinograph")
             
-    def heliocentric_model(self, origin_planet_name: str, save_figure: bool = False) -> None:
+    def heliocentric_model(self, origin_planet_name: str, show_plot: bool = True, save_figure: bool = False) -> None:
+        """
+        Compute the heliocentric using origin_planet_name as centre
+
+        Args:
+            origin_planet_name (str): Name of centre planet (from planets in self.system.planets).\n
+            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.\n
+            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
+        """
         
-        num_points = 1234
+        num_points = 3000
         
-        self.tmax *= 10
+        self.tmax *= 20
         self.dt = self.tmax / num_points
         
         
@@ -338,6 +350,7 @@ class Viewer:
         if save_figure: 
             utils.save_figure(name=f"{origin_planet_name}'s heliocentric model")
         
-        plt.show()
+        if show_plot:
+            plt.show()
                     
        

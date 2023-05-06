@@ -54,7 +54,7 @@ def save_figure(name: str) -> None:
     if not os.path.exists("figures"):
         os.mkdir("figures")
         
-    plt.savefig(f"figures/{name}")
+    plt.savefig(f"figures/{name}", dpi=250)
 
 def save_system(model: Solar_System) -> None:
     """

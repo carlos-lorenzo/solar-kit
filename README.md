@@ -18,7 +18,7 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Spinograph, animated
 
 ### How to use
-1. "pip install solarkit" or [download package files](https://github.com/carlos-lorenzo/solarkit) from repository and then insatll locally
+1. "pip install solarkit" or [download package files](https://github.com/carlos-lorenzo/solarkit/tree/main/Package) from repository and  install locally
 2. [Download](https://github.com/carlos-lorenzo/solarkit/blob/08a2d0ddc34b3abecce7789cbe7163d7d49cbd48/planet_data.csv) or create your own data
 3. Create .py file
 4. Start experimenting! (follow example image for guidance)

@@ -4,6 +4,7 @@
 It was built as the first part of a two part subimission for the challenge. My idea is to create a website using django to allow anyone to use the simulation. Having this package will ensure clean, backend code that will do the work in just a couple of lines.
 
 ### Challenges
+* Kepler's third law
 * Visualise a solar system
 * Visualise the solar system, animated
 * Spinograph
@@ -15,4 +16,9 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Spinograph, animated
 
 ### How to use
-<img src="https://imgur.com/a/GJxQlD3"></img>
+1. pip install solarkit
+2. create .py file
+3. start experimenting! (follow example image for guidance)
+
+### Use example
+![solarkit_example](https://user-images.githubusercontent.com/91377173/236692357-7e14751b-2e94-4a01-894f-2202fef1e30d.jpg)

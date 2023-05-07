@@ -4,6 +4,7 @@
 It was built as the first part of a two part subimission for the challenge. My idea is to create a website using django to allow anyone to use the simulation. Having this package will ensure clean, backend code that will do the work in just a couple of lines.
 
 ### Challenges
+* Kepler's Third law
 * Visualise a solar system
 * Visualise the solar system, animated
 * Spinograph

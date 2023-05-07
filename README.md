@@ -16,9 +16,4 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Spinograph, animated
 
 ### How to use
-1. pip install solarkit
-2. create .py file
-3. start experimenting! (follow example image for guidance)
-
-### Use example
-![solarkit_example](https://user-images.githubusercontent.com/91377173/236692357-7e14751b-2e94-4a01-894f-2202fef1e30d.jpg)
+<img src="https://imgur.com/a/GJxQlD3"></img>

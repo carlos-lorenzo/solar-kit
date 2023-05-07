@@ -1,12 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict
-
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-
-import utils
 
 from solar_system import Solar_System
 from planet import Planet
@@ -52,10 +49,20 @@ class Viewer:
         
         self.orbit_data = [planet.compute_orbit(compute_3D=self.compute_3D) for planet in self.chosen_planets]
 
-        
+    
         
         self.tmax = 4 * self.chosen_planets[-1].P
         self.dt = self.tmax/2500
+        
+    def __str__(self) -> str:
+        return f"Planets: {self.system.__str__()}\n3D: {self.compute_3D}\nAnimation FPS: {self.target_fps}"
+    
+    
+    
+    def initialise_plotter(self) -> None:
+        """
+        Initalises the area where everythin will be drawn on. Call every time you want to draw a new model
+        """
         
         if self.compute_3D:
             self.fig: plt.figure = plt.figure()
@@ -70,12 +77,55 @@ class Viewer:
             x_left, x_right = self.ax.get_xlim()
             y_low, y_high = self.ax.get_ylim()
             self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
-            
+    
+    
+    def add_grid(self):
+        """
+        Adds a grid
+        """
+        plt.grid()
+    
+    def add_legend(self):
+        """
+        Adds a legend
+        """
+        plt.legend()
+    
+    def lable_axes(self, x_lable: str = " x (AU)", y_lable: str = "y (AU)", z_lable: str = "z (AU)"):
+        """
+        Adds lables to axes. Call to override default axes' lables
+
+        Args:
+            x_lable (str, optional): x lable. Defaults to " x (AU)".
+            y_lable (str, optional): y lable. Defaults to "y (AU)".
+            z_lable (str, optional): z lable. Defaults to "z (AU)".
+        """
         
-    def __str__(self) -> str:
-        return f"Planets: {self.system.__str__()}\n3D: {self.compute_3D}\nAnimation FPS: {self.target_fps}"
+        self.ax.set_xlabel(x_lable)
+        self.ax.set_ylabel(y_lable)
+        if self.compute_3D:
+            self.ax.set_zlabel(z_lable)
+    
+    def show_plot(self):
+        """
+        Show drawn figure (calls plt.show())
+        """
+        plt.show()
+    
+    def save_figure(self, filename: str) -> None:
+        """_summary_
+
+        Args:
+            filename (str): _description_
+        """
         
-           
+
+        if not os.path.exists("figures"):
+            os.mkdir("figures")
+        
+        plt.savefig(f"figures/{filename}", dpi=250)
+        
+          
     def plot_orbit(self, orbit_data: Dict[str, List[float]]) -> None:
         """
         Plots the orbit of a planet
@@ -99,6 +149,7 @@ class Viewer:
             self.ax.plot(orbit_data["x"], orbit_data["y"], orbit_data["z"], label=f"{orbit_data['name']}'s orbit", c=orbit_data["c"])
         else:
             self.ax.plot(orbit_data["x"], orbit_data["y"], label=f"{orbit_data['name']}'s orbit", c=orbit_data["c"])
+    
             
     def plot_planet(self, planet_data: Dict[str, float]) -> None:
         """
@@ -118,6 +169,7 @@ class Viewer:
         else:
             # Draw 2D
             self.ax.scatter(planet_data["x"], planet_data["y"], label=planet_data["name"], s=25, c=planet_data["c"])
+   
              
     def plot_centre(self, name: str, colour: str) -> None:
         """
@@ -134,13 +186,30 @@ class Viewer:
         else:
             self.ax.scatter(0, 0, s=100, label=name, c=colour)
       
-    def show_orbits(self, show_plot: bool = True, save_figure: bool = False) -> None:
+
+    
+    def third_law(self):
         """
-        Show the orbits of the selected planets
+        Proves Kepler's third law
+        """
         
-        Args:
-            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.
-            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
+        
+        x = [planet.a**3 for planet in  self.system.planets.values()]
+        y = [planet.P**2 for planet in  self.system.planets.values()]
+        
+
+        plt.scatter(x, y, c="#4F81BD", marker="D", label="Kepler's third law")
+        plt.plot(x, y, c="r", label="Linear (Kepler's third law)")
+
+
+        plt.title("Kepler's third law")
+        self.lable_axes(x_lable="a (AU)", y_lable="P (Yr)")
+        
+        
+        
+    def system_orbits(self) -> None:
+        """
+        Plot the orbits of the selected planets
         """
         self.plot_centre(name="Sun", colour="y")
         
@@ -148,19 +217,10 @@ class Viewer:
             self.plot_orbit(orbit_data=planet_orbit_data)  
         
         plt.title("Planet orbits")
-        self.ax.set_xlabel('x (AU)')
-        self.ax.set_ylabel('y (AU)')
-        if self.compute_3D:
-            self.ax.set_zlabel('z (AU)')
+        self.lable_axes()
+        
             
-        plt.legend()
-        plt.grid()
         
-        if save_figure: 
-            utils.save_figure(name=f"{self.system.system_name}'s orbit")
-        
-        if show_plot:
-            plt.show()
             
     def animate_orbits(self) -> None:
         """
@@ -180,11 +240,7 @@ class Viewer:
             self.t += self.dt
             
             plt.title("Planet orbits")
-            self.ax.set_xlabel('x (AU)')
-            self.ax.set_ylabel('y (AU)')
-            
-            if self.compute_3D:
-                self.ax.set_zlabel('z (AU)')
+            self.lable_axes()
             
             plt.legend()
             plt.grid()
@@ -192,14 +248,10 @@ class Viewer:
             plt.pause(1/self.target_fps)
             plt.cla()
     
-    def spinograph(self, show_plot: bool = True, save_figure: bool = False) -> None:
+    
+    def spinograph(self) -> None:
         """
         Draw a spinograph with the chosen planets        
-
-        Args:
-            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.           
-            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
-            
         """
         
         self.tmax *= 10
@@ -226,27 +278,13 @@ class Viewer:
         
         
         plt.title(f"{self.system.system_name}'s spinograph")
-        self.ax.set_xlabel('x (AU)')
-        self.ax.set_ylabel('y (AU)')
+        self.lable_axes()
         
-        if self.compute_3D:
-                self.ax.set_zlabel('z (AU)')
         
-        if save_figure:
-            utils.save_figure(name=f"{self.system.system_name}'s spinograph")
-        
-        if show_plot:   
-            plt.show()
-        
-    def animate_spinograph(self, save_figure: bool = False) -> None:
+    def animate_spinograph(self) -> None:
         """
-        Animate the drawing of a spinograph with the chosen planets        
-
-        Args:  
-            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
-            
+        Animate the drawing of a spinograph with the chosen planets            
         """
-        
         
         self.tmax *= 10
         self.dt = self.tmax / 1234
@@ -273,23 +311,15 @@ class Viewer:
             plt.pause(1/self.target_fps)
         
         plt.title(f"{self.system.system_name}'s spinograph")
-        self.ax.set_xlabel('x (AU)')
-        self.ax.set_ylabel('y (AU)')
+        self.lable_axes()
         
-        if self.compute_3D:
-            self.ax.set_zlabel('z (AU)')
-        
-        if save_figure:
-            utils.save_figure(name=f"{self.system.system_name}'s spinograph")
-            
-    def heliocentric_model(self, origin_planet_name: str, show_plot: bool = True, save_figure: bool = False) -> None:
+              
+    def heliocentric_model(self, origin_planet_name: str) -> None:
         """
         Compute the heliocentric using origin_planet_name as centre
 
         Args:
-            origin_planet_name (str): Name of centre planet (from planets in self.system.planets).\n
-            show_plot (bool, optional): Show the final figure (plt.show()). Defaults to True.\n
-            save_figure (bool, optional): Save the final figure to an image (The image will be saved in /figures). Defaults to False.
+            origin_planet_name (str): Name of centre planet (from planets in self.system.planets).
         """
         
         num_points = 3000
@@ -339,18 +369,7 @@ class Viewer:
 
         
         plt.title(f"{origin_planet_name}'s heliocentric model")
-        self.ax.set_xlabel('x (AU)')
-        self.ax.set_ylabel('y (AU)')
+        self.lable_axes()
         
-        if self.compute_3D:
-            self.ax.set_zlabel('z (AU)')
-        
-        plt.legend()
-        
-        if save_figure: 
-            utils.save_figure(name=f"{origin_planet_name}'s heliocentric model")
-        
-        if show_plot:
-            plt.show()
                     
-       
+    

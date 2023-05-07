@@ -15,4 +15,4 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Spinograph, animated
 
 ### How to use
-1. pip install solarkit
+<img src="https://imgur.com/a/GJxQlD3"></img>

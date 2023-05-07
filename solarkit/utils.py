@@ -1,8 +1,6 @@
 import pickle
-import os
 
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from planet import Planet
 from solar_system import Solar_System
@@ -51,11 +49,7 @@ def load_system(path: str):
     return system
 
 
-def save_figure(name: str) -> None:
-    if not os.path.exists("figures"):
-        os.mkdir("figures")
-        
-    plt.savefig(f"figures/{name}", dpi=250)
+
 
 
 def save_system(model: Solar_System) -> None:

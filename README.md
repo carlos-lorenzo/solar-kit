@@ -3,7 +3,7 @@
 
 It was built as the first part of a two part subimission for the challenge. My idea is to create a website using django to allow anyone to use the simulation. Having this package will ensure clean, backend code that will do the work in just a couple of lines.
 
-[Repo link](https://github.com/carlos-lorenzo/solarkit) (for PyPI)
+* [Repo link](https://github.com/carlos-lorenzo/solarkit) (for PyPI)
 
 ### Challenges
 * Kepler's Third Law
@@ -18,10 +18,10 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Spinograph, animated
 
 ### How to use
-1. pip install solarkit or [download package files](https://github.com/carlos-lorenzo/solarkit) from repository and then insatll locally
+1. "pip install solarkit" or [download package files](https://github.com/carlos-lorenzo/solarkit) from repository and then insatll locally
 2. [Download](https://github.com/carlos-lorenzo/solarkit/blob/08a2d0ddc34b3abecce7789cbe7163d7d49cbd48/planet_data.csv) or create your own data
-3. create .py file
-4. start experimenting! (follow example image for guidance)
+3. Create .py file
+4. Start experimenting! (follow example image for guidance)
 
 ### Use example
 ![solarkit_example](https://user-images.githubusercontent.com/91377173/236692357-7e14751b-2e94-4a01-894f-2202fef1e30d.jpg)

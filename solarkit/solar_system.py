@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
-from planet import Planet
+from solarkit.planet import Planet
 
 
 @dataclass

@@ -5,8 +5,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from solar_system import Solar_System
-from planet import Planet
+from solarkit.solar_system import Solar_System
+from solarkit.planet import Planet
 
 
 @dataclass
@@ -20,6 +20,7 @@ class Viewer:
         compute_3D (bool): Show in 3D\n
         target_fps (int): Animation's fps\n
     """
+    
     system: Solar_System
     planets_to_use: List[str] = field(default_factory=list)
     compute_3D: Optional[bool] = field(default= False)
@@ -112,18 +113,19 @@ class Viewer:
         """
         plt.show()
     
-    def save_figure(self, filename: str) -> None:
+    def save_figure(self, path: str, filename: str) -> None:
         """_summary_
 
         Args:
-            filename (str): _description_
+            path (str): directory where the image will be stored
+            filename (str): name of image
         """
         
 
-        if not os.path.exists("figures"):
-            os.mkdir("figures")
+        if not os.path.exists(path):
+            os.mkdir(path)
         
-        plt.savefig(f"figures/{filename}", dpi=250)
+        plt.savefig(f"{path}/{filename}", dpi=250)
         
           
     def plot_orbit(self, orbit_data: Dict[str, List[float]]) -> None:

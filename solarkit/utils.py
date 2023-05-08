@@ -2,8 +2,8 @@ import pickle
 
 import pandas as pd
 
-from planet import Planet
-from solar_system import Solar_System
+from solarkit.planet import Planet
+from solarkit.solar_system import Solar_System
 
 
 def create_planet(planet_data: pd.Series(object)) -> Planet:
@@ -27,7 +27,7 @@ def create_planet(planet_data: pd.Series(object)) -> Planet:
     
     return new_planet
 
-def load_system(path: str):
+def load_system_from_csv(path: str):
     """
     Creates a system from a csv. Each row contains the required data (reference Planet object parameters)
 

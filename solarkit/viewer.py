@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict
 import os
+from io import StringIO
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -79,14 +81,19 @@ class Viewer:
             y_low, y_high = self.ax.get_ylim()
             self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
     
+    def server_mode(self) -> None:
+        """
+        Allow matplotlib to work when not in main thread (when running in server) 
+        """
+        matplotlib.use("Agg")
     
-    def add_grid(self):
+    def add_grid(self) -> None:
         """
         Adds a grid
         """
         plt.grid()
     
-    def add_legend(self):
+    def add_legend(self) -> None:
         """
         Adds a legend
         """
@@ -114,7 +121,8 @@ class Viewer:
         plt.show()
     
     def save_figure(self, path: str, filename: str) -> None:
-        """_summary_
+        """
+        Save figure as image
 
         Args:
             path (str): directory where the image will be stored
@@ -127,7 +135,21 @@ class Viewer:
         
         plt.savefig(f"{path}/{filename}", dpi=250)
         
-          
+    def get_figure_data(self) -> str:
+        """
+        Get the figure data of Viewer object to embed into browser (for example)
+
+        Returns:
+            str: Figure data to be embedded in html
+        """
+        
+        imgdata = StringIO()
+        self.fig.savefig(imgdata, format='svg')
+        imgdata.seek(0)
+        
+        return imgdata.getvalue()
+    
+           
     def plot_orbit(self, orbit_data: Dict[str, List[float]]) -> None:
         """
         Plots the orbit of a planet

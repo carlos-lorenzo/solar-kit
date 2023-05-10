@@ -87,6 +87,13 @@ class Viewer:
         """
         matplotlib.use("Agg")
     
+    def close_graph(self) -> None:
+        """
+        Closes matplotlib tab
+        """
+        
+        plt.close()
+    
     def add_grid(self) -> None:
         """
         Adds a grid

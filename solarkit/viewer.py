@@ -62,9 +62,13 @@ class Viewer:
     
     
     
-    def initialise_plotter(self) -> None:
+    def initialise_plotter(self, square_ratio: bool = True) -> None:
         """
         Initalises the area where everythin will be drawn on. Call every time you want to draw a new model
+        
+        Args:
+            square_ratio (bool): Set the ratio of the plot to 1:1
+        
         """
         
         if self.compute_3D:
@@ -75,11 +79,12 @@ class Viewer:
         else:
             self.fig, self.ax = plt.subplots()
             
-            #set aspect ratio to 1
-            RATIO = 1.0
-            x_left, x_right = self.ax.get_xlim()
-            y_low, y_high = self.ax.get_ylim()
-            self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
+            if square_ratio:
+                #set aspect ratio to 1
+                RATIO = 1.0
+                x_left, x_right = self.ax.get_xlim()
+                y_low, y_high = self.ax.get_ylim()
+                self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
     
     def server_mode(self) -> None:
         """
@@ -236,9 +241,43 @@ class Viewer:
         plt.title("Kepler's third law")
         self.lable_axes(x_lable="a (AU)", y_lable="P (Yr)")
         
+    
+    
+    def angle_vs_time_comparison(self, planet_a_name: Optional[str] = "Pluto") -> None:
+        """
+        Compare the angle over time of a planet against a circular orbit 
+        
+        Args:
+            planet_a_name (Optional[str], optional): Planet name to be compared against (must be planet). Defaults to "Pluto".
+
+        Raises:
+            KeyError: Planet name not found in self.system.planets
+        """
+
+        try:
+            planet_a = self.system.planets[planet_a_name]
+        except KeyError:
+            raise KeyError(f"{planet_a_name} not found")
+        
+        
+        t = np.linspace(1, 800, 1000)
+
+        # Call angle_vs_time function to get polar angles
+        theta_planet_a = self.system.compute_angle_vs_time(t=t, P=planet_a.P, ecc=planet_a.ecc, theta0=0) 
+        theta_circular = self.system.compute_angle_vs_time(t=t, P=planet_a.P, ecc=0, theta0=0)
+
+        # Plotting
+        self.ax.plot(t, theta_planet_a, label=planet_a_name)
+        self.ax.plot(t, theta_circular, label='Circular Motion')
+        
+        self.ax.set_xlabel('Time (years)')
+        self.ax.set_ylabel('Polar Angle (radians)')
+        
+        plt.title('Variation of Polar Angle with Time')
         
         
     def system_orbits(self) -> None:
+        
         """
         Plot the orbits of the selected planets
         """
@@ -249,8 +288,6 @@ class Viewer:
         
         plt.title("Planet orbits")
         self.lable_axes()
-        
-            
         
             
     def animate_orbits(self) -> None:

@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
+import numpy as np
+from scipy.interpolate import interp1d
+
 from solarkit.planet import Planet
 
 
@@ -70,4 +73,49 @@ class Solar_System:
                     "c": target_planet_data["c"],
                     "x": (target_planet_data["x"] - origin_planet_data["x"]),
                     "y": (target_planet_data["y"] - origin_planet_data["y"])} 
+    
+    
+    def compute_angle_vs_time(self, t: np.ndarray, P: float, ecc: float, theta0: float) -> np.ndarray:
+        """
+        Calculate the polar angle as a function of time using Simpson's rule.
         
+        (Translated from matlab to python from: https://www.dropbox.com/s/dot9l0igz7x1ija/Comp%20Challenge%20%202023%20Solar%20System%20orbits%20-%20presentation.pdf?dl=0)
+
+        Args:
+            t (np.ndarray): Array of time values.
+            P (float): Orbital period in years.
+            ecc (float): Eccentricity of the orbit.
+            theta0 (float): Initial polar angle in radians.
+
+        Returns:
+            np.ndarray: Array of polar angles corresponding to the input time values in radians.
+        """
+        
+        # Angle step for Simpson's rule
+        dtheta = 1 / 1000
+
+        # Number of orbits
+        N = np.ceil(t[-1] / P)
+
+        # Define array of polar angles for orbits
+        theta = np.arange(theta0, 2 * np.pi * N + theta0 + dtheta, dtheta)
+
+        # Evaluate integrand of time integral
+        f = (1 - ecc * np.cos(theta)) ** -2
+
+        # Define Simpson's rule coefficients 
+        L = len(theta)
+        isodd = np.remainder(np.arange(1, L - 1), 2)
+        isodd[isodd == 1] = 4
+        isodd[isodd == 0] = 2
+        c = np.concatenate(([1], isodd, [1]))
+
+        # Calculate array of times
+        tt = P * (1 - ecc ** 2) ** (3 / 2) * (1 / (2 * np.pi)) * dtheta * (1 / 3) * np.cumsum(c * f)
+
+        # Interpolate the polar angles for the eccentric orbit at the circular orbit times
+        theta_interp = interp1d(tt, theta, kind='cubic')
+        theta_result = theta_interp(t)
+
+        return theta_result
+            

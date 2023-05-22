@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-
 import numpy as np
-
+from scipy.interpolate import interp1d
 
 # Objects
 @dataclass
@@ -129,5 +128,7 @@ class Planet:
                     "c": self.colour,
                     "x": x,
                     "y": y}
-            
+    
+    
+
 

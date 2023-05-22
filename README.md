@@ -10,6 +10,7 @@ It was built as the first part of a two part subimission for the challenge. My i
 * Visualise a solar system
 * Visualise the solar system, animated
 * Spinograph
+* Angle vs Time
 * Heliocentric model
 
 ### Personal aditions
@@ -23,5 +24,5 @@ It was built as the first part of a two part subimission for the challenge. My i
 3. Create .py file
 4. Start experimenting! (follow example image for guidance)
 
-### Use example
-![solarkit_example](https://user-images.githubusercontent.com/91377173/236692357-7e14751b-2e94-4a01-894f-2202fef1e30d.jpg)
+### Use example (example file available in repository)
+![solarkit_example](https://github.com/carlos-lorenzo/solarkit/assets/91377173/cdab5fb1-c55e-427f-a0d9-f156be7e535c)

@@ -11,7 +11,7 @@ system_viewer = Viewer(system=system, planets_to_use=["Earth", "Venus"])
 system_viewer.initialise_plotter()
 
 # Call any method
-system_viewer.spinograph(lines_drawn=1234)
+system_viewer.system_orbits()
 
 # Add legend/grid/axes (optional)
 system_viewer.add_grid()
@@ -19,7 +19,7 @@ system_viewer.add_legend()
 system_viewer.lable_axes()
 
 # Save figure to image
-#system_viewer.save_figure(path="Figures/", filename="orbits")
+system_viewer.save_figure(path="Figures/", filename="orbits")
 
 # Witness your creation!
 system_viewer.show_plot()

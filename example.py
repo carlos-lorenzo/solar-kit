@@ -5,13 +5,13 @@ from solarkit.viewer import Viewer
 system = utils.load_system_from_csv(path="planet_data.csv")
 
 # Create the viewer
-system_viewer = Viewer(system=system)
+system_viewer = Viewer(system=system, planets_to_use=["Earth", "Venus"])
 
 # Create the figure where everything will be drawn on
 system_viewer.initialise_plotter()
 
 # Call any method
-system_viewer.system_orbits()
+system_viewer.spinograph(lines_drawn=1234)
 
 # Add legend/grid/axes (optional)
 system_viewer.add_grid()
@@ -19,7 +19,7 @@ system_viewer.add_legend()
 system_viewer.lable_axes()
 
 # Save figure to image
-system_viewer.save_figure(path="Figures/", filename="orbits")
+#system_viewer.save_figure(path="Figures/", filename="orbits")
 
 # Witness your creation!
 system_viewer.show_plot()

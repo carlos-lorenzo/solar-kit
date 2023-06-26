@@ -40,7 +40,7 @@ class Viewer:
     t: float = field(init=False, default=0)
     
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         
         if not self.planets_to_use:
             self.planets_to_use = list(self.system.planets.keys())
@@ -62,13 +62,14 @@ class Viewer:
     
     
     
-    def initialise_plotter(self, square_ratio: bool = True) -> None:
+    def initialise_plotter(self, square_ratio: bool = True, dpi: int = 1000, size: float = 8) -> None:
         """
-        Initalises the area where everythin will be drawn on. Call every time you want to draw a new model
+        Initalises the area where everything will be drawn on. Call every time you want to draw a new model
         
         Args:
-            square_ratio (bool): Set the ratio of the plot to 1:1
-        
+            square_ratio (bool): Set the ratio of the plot to 1:1. Defaults to True.
+            dpi (int): Resolution (higher dpi, more resolution). Defaults to 1000.
+            size (float): Default size (arbitrary units, higher size, larger default plot)
         """
         
         if self.compute_3D:
@@ -85,11 +86,16 @@ class Viewer:
                 x_left, x_right = self.ax.get_xlim()
                 y_low, y_high = self.ax.get_ylim()
                 self.ax.set_aspect(abs((x_right - x_left)/(y_low - y_high)) * RATIO)
-    
+
+        
+        self.fig.set_size_inches(size, size)
+        matplotlib.rcParams['figure.dpi'] = dpi
+        
     def server_mode(self) -> None:
         """
         Allow matplotlib to work when not in main thread (when running in server) 
         """
+        
         matplotlib.use("Agg")
     
     def close_graph(self) -> None:
@@ -103,15 +109,17 @@ class Viewer:
         """
         Adds a grid
         """
+        
         plt.grid()
     
     def add_legend(self) -> None:
         """
         Adds a legend
         """
+        
         plt.legend()
     
-    def lable_axes(self, x_lable: str = " x (AU)", y_lable: str = "y (AU)", z_lable: str = "z (AU)"):
+    def lable_axes(self, x_lable: str = " x (AU)", y_lable: str = "y (AU)", z_lable: str = "z (AU)") -> None:
         """
         Adds lables to axes. Call to override default axes' lables
 
@@ -126,15 +134,16 @@ class Viewer:
         if self.compute_3D:
             self.ax.set_zlabel(z_lable)
     
-    def show_plot(self):
+    def show_plot(self) -> None:
         """
         Show drawn figure (calls plt.show())
         """
+        
         plt.show()
     
     def save_figure(self, path: str, filename: str) -> None:
         """
-        Save figure as image
+        Save figure as an image
 
         Args:
             path (str): directory where the image will be stored
@@ -147,16 +156,19 @@ class Viewer:
         
         plt.savefig(f"{path}/{filename}", dpi=250)
         
-    def get_figure_data(self) -> str:
+    def get_figure_data(self, dpi: int = 1000) -> str:
         """
         Get the figure data of Viewer object to embed into browser (for example)
+        
+        Args:
+            dpi (int): Resolution (higher dpi, more resolution). Defaults to 1000.
 
         Returns:
             str: Figure data to be embedded in html
         """
         
         imgdata = StringIO()
-        self.fig.savefig(imgdata, format='svg')
+        self.fig.savefig(imgdata, format='svg', dpi=dpi)
         imgdata.seek(0)
         
         return imgdata.getvalue()
@@ -224,7 +236,7 @@ class Viewer:
       
 
     
-    def third_law(self):
+    def third_law(self) -> None:
         """
         Proves Kepler's third law
         """
@@ -277,10 +289,10 @@ class Viewer:
         
         
     def system_orbits(self) -> None:
-        
         """
         Plot the orbits of the selected planets
         """
+        
         self.plot_centre(name="Sun", colour="y")
         
         for planet_orbit_data in self.orbit_data:
@@ -317,13 +329,16 @@ class Viewer:
             plt.cla()
     
     
-    def spinograph(self) -> None:
+    def spinograph(self, lines_drawn: int = 1234) -> None:
         """
-        Draw a spinograph with the chosen planets        
+        Draw a spinograph with the chosen planets 
+        
+        Args:
+            lines_drawn (Optional[int]): Sets how many lines drawn will be drawn . Defaults to 1234
         """
         
         self.tmax *= 10
-        self.dt = self.tmax / 1234
+        self.dt = self.tmax / lines_drawn
         
         
         while self.t < self.tmax:
